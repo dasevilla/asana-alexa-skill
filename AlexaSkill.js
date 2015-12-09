@@ -146,6 +146,11 @@ Response.prototype = (function () {
                 content: options.cardContent
             };
         }
+        if (options.cardLinkAccount) {
+            alexaResponse.card = {
+                type: "LinkAccount"
+            };
+        }
         var returnResult = {
                 version: '1.0',
                 response: alexaResponse
@@ -170,6 +175,14 @@ Response.prototype = (function () {
                 output: speechOutput,
                 cardTitle: cardTitle,
                 cardContent: cardContent,
+                shouldEndSession: true
+            }));
+        },
+        tellWithLinkAccountCard: function (speechOutput) {
+            this._context.succeed(buildSpeechletResponse({
+                session: this._session,
+                output: speechOutput,
+                cardLinkAccount: true,
                 shouldEndSession: true
             }));
         },

@@ -126,7 +126,11 @@ var CreateTaskIntent = function(intent, session, response) {
     var speechOutput = speechOutputForError(err);
 
     console.log(speechOutput.speech);
-    response.tell(speechOutput);
+    if (err instanceof asana.errors.NoAuthorization) {
+      response.tellWithLinkAccountCard(speechOutput);
+    } else {
+      response.tell(speechOutput);
+    }
   });
 };
 
@@ -140,7 +144,8 @@ var speechOutputForError = function(err) {
       errorMessage = "the request to Asana was invalid";
 
     } else if (err instanceof asana.errors.NoAuthorization) {
-      errorMessage = "your Asana credentials are missing or expired";
+      errorMessage = "your Asana credentials are missing or expired. " +
+        "Please use the Alexa app to link your Asana account";
 
     } else if (err instanceof asana.errors.Forbidden) {
       errorMessage = "the request to Asana wasn't allowed";
