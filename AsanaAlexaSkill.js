@@ -3,6 +3,7 @@ var Promise = require("bluebird");
 require('dotenv').load();
 
 var AlexaSkill = require('./AlexaSkill');
+var AsanaSkillError = require('./AsanaSkillError');
 
 var ALEXA_APP_ID = process.env.ALEXA_APP_ID;
 var ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN;
@@ -78,8 +79,8 @@ AsanaSkill.prototype.intentHandlers = {
 };
 
 var CreateTaskIntent = function(intent, session, response) {
-  var taskCreateRequest = {
-    asanaClient: getAsanaClient(),
+  var req = {
+    asanaClient: getAsanaClient(session),
     taskNameSlot: intent.slots.TaskName,
     projectNameSlot: intent.slots.ProjectName,
     user: null,
@@ -88,10 +89,17 @@ var CreateTaskIntent = function(intent, session, response) {
     createdTask: null
   };
 
-  // if there's not a task name, return an error
+  // TODO: Handle this by prompting the user for a task name
+  if (req.taskNameSlot.value === undefined) {
+    var err = new AsanaSkillError('Cannot create a task without a name');
+    var speechOutput = speechOutputForError(err);
 
-  // Find the current user
-  var createTaskPromise = setUser(taskCreateRequest)
+    console.log(speechOutput.speech);
+    response.tell(speechOutput);
+    return;
+  }
+
+  var createTaskPromise = setUser(req)
   .then(setTargetWorkspaceId)
   .then(setTargetProject)
   .then(createTask)
@@ -111,8 +119,49 @@ var CreateTaskIntent = function(intent, session, response) {
     var cardTitle = "Created task in Asana";
     var cardContent = req.createdTask.name + " added to " + createdInName;
 
+    console.log(speechText);
     response.tellWithCard(speechOutput, cardTitle, cardContent);
+  })
+  .catch(function(err) {
+    var speechOutput = speechOutputForError(err);
+
+    console.log(speechOutput.speech);
+    response.tell(speechOutput);
   });
+};
+
+var speechOutputForError = function(err) {
+    var errorMessage = "a problem has occurred";
+
+    if (err instanceof AsanaSkillError) {
+      errorMessage = err.message;
+
+    } else if (err instanceof asana.errors.InvalidRequest) {
+      errorMessage = "the request to Asana was invalid";
+
+    } else if (err instanceof asana.errors.NoAuthorization) {
+      errorMessage = "your Asana credentials are missing or expired";
+
+    } else if (err instanceof asana.errors.Forbidden) {
+      errorMessage = "the request to Asana wasn't allowed";
+
+    } else if (err instanceof asana.errors.NotFound) {
+      errorMessage = "the Asana resource wasn't found";
+
+    } else if (err instanceof asana.errors.RateLimitEnforced) {
+      errorMessage = "the request was rate limited by Asana, try again later";
+
+    } else if (err instanceof asana.errors.ServerError) {
+      errorMessage = "the Asana server experienced an error";
+    }
+
+    var speechText = "I wasn't able to create the task, " + errorMessage + ".";
+    var speechOutput = {
+      speech: speechText,
+      type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+
+    return speechOutput;
 };
 
 var setUser = function(req) {
@@ -145,11 +194,11 @@ var createTask = function(req) {
   var taskOptions = {};
 
   if (req.targetWorkspaceId === null) {
-    return Promise.reject(new Error('Cannot create a task without a workspace ID'));
+    return Promise.reject(new AsanaSkillError('Cannot create a task without a workspace ID'));
   }
 
   if (req.taskNameSlot === null || req.taskNameSlot.value === undefined) {
-    return Promise.reject(new Error('Cannot create a task without a task name'));
+    return Promise.reject(new AsanaSkillError('Cannot create a task without a task name'));
   } else {
     taskOptions.name = req.taskNameSlot.value;
   }
@@ -157,7 +206,7 @@ var createTask = function(req) {
   // Assign to a user if we don't have a project
   if (req.targetProject === null) {
     if (req.user === null) {
-      return Promise.reject(new Error('Cannot create a task without a user or project ID'));
+      return Promise.reject(new AsanaSkillError('Cannot create a task without a user or project ID'));
     }
     taskOptions.assignee = req.user.id;
   }
@@ -171,7 +220,7 @@ var createTask = function(req) {
 
 var addProjectToTask = function(req) {
   if (req.targetWorkspaceId === null) {
-    return Promise.reject(new Error('Cannot add a project to a task without a task'));
+    return Promise.reject(new AsanaSkillError('Cannot add a project to a task without a task'));
   }
 
   if (req.targetProject === null) {
@@ -218,24 +267,6 @@ var getAsanaClient = function(session) {
     return client.useOauth({
       credentials: session.user.accessToken
     });
-  }
-};
-
-var asanaUser = {
-  getUserPromise: null,
-
-  get: function(asanaClient) {
-    var that = this;
-
-    if (this.getUserPromise === null) {
-      this.getUserPromise = asanaClient.users.me();
-
-      this.getUserPromise.catch(function() {
-        asanaClient.users.me().getUserPromise = null;
-      });
-    }
-
-    return this.getUserPromise;
   }
 };
 
