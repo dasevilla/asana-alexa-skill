@@ -1,0 +1,20 @@
+{
+  "intents": [
+    {
+      "intent": "CreateTaskIntent",
+      "slots": [
+        {
+          "name": "TaskName",
+          "type": "SAMPLE_TASK_NAMES"
+        },
+        {
+          "name": "ProjectName",
+          "type": "SAMPLE_PROJECT_NAMES"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "asana-alexa",
+  "version": "0.0.1",
+  "description": "Unofficial Asana Alexa Skill",
+  "main": "AsanaAlexaSkill.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.example.com/"
+  },
+  "keywords": [
+    "asana",
+    "alexa"
+  ],
+  "author": "Devin Sevilla",
+  "license": "MIT",
+  "dependencies": {
+    "asana": "^0.13.0",
+    "bluebird": "^3.0.6",
+    "dotenv": "^1.2.0",
+    "fuzzy": "^0.1.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.2.19",
+    "grunt": "^0.4.5",
+    "grunt-aws-lambda": "^0.11.0"
+  },
+  "bundledDependencies": [
+    "asana",
+    "bluebird",
+    "dotenv",
+    "fuzzy"
+  ]
+}

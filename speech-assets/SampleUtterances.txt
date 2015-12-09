@@ -1,0 +1,18 @@
+CreateTaskIntent remember {TaskName}
+CreateTaskIntent remember to {TaskName}
+CreateTaskIntent add {TaskName}
+CreateTaskIntent add a task {TaskName}
+CreateTaskIntent add {TaskName} to my list
+CreateTaskIntent add {TaskName} to the list
+CreateTaskIntent add {TaskName} to list
+CreateTaskIntent add {TaskName} to {ProjectName}
+CreateTaskIntent add {TaskName} in {ProjectName}
+CreateTaskIntent save {TaskName}
+CreateTaskIntent save a task {TaskName}
+CreateTaskIntent save {TaskName} to my list
+CreateTaskIntent save {TaskName} to the list
+CreateTaskIntent save {TaskName} to list
+CreateTaskIntent save {TaskName} to {ProjectName}
+CreateTaskIntent save {TaskName} in {ProjectName}
+CreateTaskIntent create {TaskName}
+CreateTaskIntent create a task {TaskName}
