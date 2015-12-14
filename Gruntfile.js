@@ -1,3 +1,4 @@
+require('dotenv').load();
 var grunt = require('grunt');
 grunt.loadNpmTasks('grunt-aws-lambda');
 
@@ -12,7 +13,7 @@ grunt.initConfig({
    lambda_deploy: {
       default: {
          package: 'AsanaAlexaSkill',
-         arn: 'arn:aws:lambda:us-east-1:563172112436:function:asanaAlexa'
+         arn: process.env.AMAZON_LAMBDA_ARN
       }
    },
    lambda_package: {

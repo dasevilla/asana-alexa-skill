@@ -13,12 +13,21 @@ Checkout the `SampleUtterances.txt` file for more examples.
 
 ## Limitations
 
-Right now you have to hard-code your Asana access token. While Alex does support the OAuth 2.0 implicit grant, there's two issues:
+## Authentication
+
+Right now you have to hard-code your Asana access token. While Alexa does support the OAuth 2.0 implicit grant, there's two issues:
 
 - Asana requires the redirect URI, but Amazon doesn't included it when creating the authorization URL
-- Asana access tokens are limited to twelve hours, so you'll need to constantly sign in again.
+- Asana access tokens are limited to twelve hours, so you'll need to re-authorize the application often
 
 You can workaround the first issue by manually specifying the `redirect_uri` parameter in the Alexa Skill authorization URL setting.
+
+
+### Default workspace
+
+Ideally you could tell Alexa which workspace you want to use as the default. That would need to be stored somewhere and I didn't want to implement that since we're already hard-coding settings due to the authorization limitation.
+
+You can specify the default workspace be setting the `ASANA_DEFAULT_WORKSPACE_ID` in `sample.env`. Finding your workspace identifiers is an exercises left to the reader.
 
 
 ## Configure a new Alexa Skill
@@ -28,7 +37,9 @@ Everything you need can be found in the `speech-assets` directory. When setting 
 
 ## Develop
 
-Copy `sample.env` to `.env` and fill in the values.
+This project assumes you'll be deploying to Amazon Lambda. Copy `sample.env` to `.env` and fill in the values. Then install the packages:
+
+    npm install
 
 To test the event defined in `event.json`, invoke:
 
