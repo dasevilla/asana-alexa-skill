@@ -11,6 +11,15 @@ Example phrases:
 
 Checkout the `SampleUtterances.txt` file for more examples.
 
+## Limitations
+
+Right now you have to hard-code your Asana access token. While Alex does support the OAuth 2.0 implicit grant, there's two issues:
+
+- Asana requires the redirect URI, but Amazon doesn't included it when creating the authorization URL
+- Asana access tokens are limited to twelve hours, so you'll need to constantly sign in again.
+
+You can workaround the first issue by manually specifying the `redirect_uri` parameter in the Alexa Skill authorization URL setting.
+
 
 ## Configure a new Alexa Skill
 
