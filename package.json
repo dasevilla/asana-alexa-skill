@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://www.example.com/"
+    "url": "https://github.com/dasevilla/asana-alexa-skill.git"
   },
   "keywords": [
     "asana",
